@@ -6,4 +6,4 @@ export const EQUAL = '=';
 export const DOT = '.';
 
 export const SET = 'set';
-export const RESET = 'reset';
+export const RESET = 'RESET';

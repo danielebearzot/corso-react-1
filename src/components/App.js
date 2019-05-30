@@ -13,6 +13,10 @@ class App extends Component {
     // Memorizza le cifre e la virgola in sequenza
     this.digits = [];
 
+    // Flag
+    this.startCalculator = false;
+    this.total = 0;
+
     // Memorizza primo e secondo operando
     this.operators = [];
 
@@ -59,6 +63,9 @@ class App extends Component {
   }
 
   setOperation(operation) {
+    // Non eseguire operazioni se non ho almeno una cifra
+    if (this.startCalculator && this.digits.length === 0) return false;
+
     console.log('operation:', operation);
     // salvo operatore
     this.setState({ operation });
@@ -73,8 +80,10 @@ class App extends Component {
   }
 
   doComputation() {
-    const secondNumber = this.state.display;
+    const secondNumber = this.operators.length === 1 ? this.operators[0] : this.state.display;
     this.operators.push(parseFloat(secondNumber));
+
+    this.startCaluculator = false;
 
     console.log(this.operators);
 
@@ -95,9 +104,13 @@ class App extends Component {
         break;
     }
 
+    const total = parseFloat(result);
+    this.total = total;
+
     this.operators = [];
     this.digits = [];
-    this.setState({ display: parseFloat(result), operation: '' });
+    this.startCalculator = true;
+    this.setState({ display: total, operation: '' });
   }
 
   handleClick(label) {

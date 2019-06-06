@@ -13,10 +13,6 @@ class App extends Component {
     // Memorizza le cifre e la virgola in sequenza
     this.digits = [];
 
-    // Flag
-    this.startCalculator = false;
-    this.total = 0;
-
     // Memorizza primo e secondo operando
     this.operators = [];
 
@@ -63,31 +59,45 @@ class App extends Component {
   }
 
   setOperation(operation) {
-    // Non eseguire operazioni se non ho almeno una cifra
-    if (this.startCalculator && this.digits.length === 0) return false;
+    // prendo il primo operando
+    const firstNumber = parseFloat(this.state.display);
 
-    console.log('operation:', operation);
+    if (this.operators.length === 1 && this.state.operation) {
+      this.doComputation(true);
+    } else {
+      this.operators.push(firstNumber);
+    }
+
     // salvo operatore
     this.setState({ operation });
-    // salvo primo operando
-    const firstNumber = this.state.display;
-    // aggiungo primo operando
-    this.operators.push(parseFloat(firstNumber));
-    // reset del this.digits
+    console.log('operation:', operation);
+
+    // reset digits
     this.digits = [];
 
-    console.log('this.operators', this.operators, 'this.digits', this.digits);
+    console.log('this.operation', this.operation, 'this.digits', this.digits);
   }
 
-  doComputation() {
-    const secondNumber = this.operators.length === 1 ? this.operators[0] : this.state.display;
+  doComputation(setTotal = false) {
+    if (this.operators.length !== 2 && !this.state.operation) return false;
+
+    const secondNumber = this.state.display;
     this.operators.push(parseFloat(secondNumber));
 
-    this.startCaluculator = false;
+    console.log('doComputation', this.operators);
 
-    console.log(this.operators);
+    const total = this.getResult();
 
-    let result = '';
+    this.operators = [];
+    if (setTotal) this.operators.push(total);
+
+    this.digits = [];
+
+    this.setState({ display: total, operation: '' });
+  }
+
+  getResult() {
+    let result = 0;
 
     switch (this.state.operation) {
       case PLUS:
@@ -104,13 +114,7 @@ class App extends Component {
         break;
     }
 
-    const total = parseFloat(result);
-    this.total = total;
-
-    this.operators = [];
-    this.digits = [];
-    this.startCalculator = true;
-    this.setState({ display: total, operation: '' });
+    return parseFloat(parseFloat(result).toPrecision(12));
   }
 
   handleClick(label) {
